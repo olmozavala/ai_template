@@ -10,13 +10,13 @@ import AI.trainingutils as utilsNN
 import AI.models.modelBuilder3D as model_builder
 from AI.models.modelSelector import select_2d_model
 
-from keras.utils import plot_model
+from tensorflow.keras.utils import plot_model
 import tensorflow as tf
 
 if __name__ == '__main__':
 
-    (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
-    # Reshaping the array to 4-dims so that it can work with the Keras API
+    (x_train, y_train), (x_test, y_test) = tf.tensorflow.keras.datasets.mnist.load_data()
+    # Reshaping the array to 4-dims so that it can work with the tensorflow.keras API
     x_train = x_train.reshape(x_train.shape[0], 28, 28, 1)
     x_test = x_test.reshape(x_test.shape[0], 28, 28, 1)
     input_shape = (28, 28, 1)

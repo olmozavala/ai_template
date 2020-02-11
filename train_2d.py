@@ -1,20 +1,20 @@
 from datetime import datetime
 
-from config.MainConfig import get_training_3d
-from AI.data_generation.Generators3D_Classification import *
+from config.MainConfig import get_training_2d
+from AI.data_generation.Generators2D import *
 
 from inout.io_common import create_folder, select_cases_from_folder
 
 from constants.AI_params import *
 import AI.trainingutils as utilsNN
-import AI.models.modelBuilder3D as model_builder
-from AI.models.modelSelector import select_3d_model
+import AI.models.modelBuilder2D as model_builder
+from AI.models.modelSelector import select_2d_model
 
 from tensorflow.keras.utils import plot_model
 
 if __name__ == '__main__':
 
-    config = get_training_3d()
+    config = get_training_2d()
 
     input_folder = config[TrainingParams.input_folder]
     output_folder = config[TrainingParams.output_folder]
@@ -26,7 +26,7 @@ if __name__ == '__main__':
     epochs = config[TrainingParams.epochs]
     img_names = config[TrainingParams.image_file_names]
     model_name_user = config[TrainingParams.config_name]
-    class_label_file_name = config[TrainingParams.class_label_file_name]
+    ctr_names = config[TrainingParams.ctr_file_names]
     optimizer = config[TrainingParams.optimizer]
 
     nn_input_size = config[ModelParams.INPUT_SIZE]
@@ -41,7 +41,9 @@ if __name__ == '__main__':
     create_folder(weights_folder)
     create_folder(logs_folder)
 
-    folders_to_read = select_cases_from_folder(input_folder, config[TrainingParams.cases])
+    # folders_to_read = select_cases_from_folder(input_folder, config[TrainingParams.cases])
+    import os
+    folders_to_read = [x for x in os.listdir(input_folder) if os.path.isdir(x)]
     tot_examples = len(folders_to_read)
 
     # ================ Split definition =================
@@ -58,7 +60,7 @@ if __name__ == '__main__':
     model_name = F'{model_name_user}_{now}'
 
     # ******************* Selecting the model **********************
-    model = select_3d_model(config)
+    model = select_2d_model(config)
     plot_model(model, to_file=join(output_folder,F'{model_name}.png'))
 
     print("Saving split information...")
@@ -77,27 +79,15 @@ if __name__ == '__main__':
                                                                        logs_folder=logs_folder)
 
     print("Training ...")
-    my_generator = Generator3DClassification()
+    my_generator = data_gen_sarga(input_folder, folders_to_read)
 
     # Decide which generator to use
     batch_size = config[TrainingParams.batch_size]
     data_augmentation = config[TrainingParams.data_augmentation]
-    if model_type == AiModels.HALF_UNET_3D_CLASSIFICATION_3_STREAMS or\
-            model_type == AiModels.HALF_UNET_3D_CLASSIFICATION_SINGLE_STREAM:
+    if (model_type == AiModels.UNET_3D_3_STREAMS) or (model_type == AiModels.UNET_3D_SINGLE):
+        train_generator = my_generator.unet_3d_multi_streams(input_folder, folders_to_read[train_ids])
+        val_generator = my_generator.unet_3d_multi_streams(input_folder, folders_to_read[val_ids])
 
-        train_generator = my_generator.half_unet_classification(input_folder=input_folder,
-                                                                folders_to_read=folders_to_read[train_ids],
-                                                                stream_file_names=img_names,
-                                                                labels_file_name=class_label_file_name,
-                                                                data_augmentation=data_augmentation,
-                                                                batch_size=batch_size)
-
-        val_generator = my_generator.half_unet_classification(input_folder=input_folder,
-                                                              folders_to_read=folders_to_read[val_ids],
-                                                              stream_file_names=img_names,
-                                                              labels_file_name=class_label_file_name,
-                                                              data_augmentation=data_augmentation,
-                                                              batch_size=batch_size)
 
     model.fit_generator(train_generator, steps_per_epoch=min(100, len(train_ids)),
                         validation_data=val_generator,

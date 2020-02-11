@@ -77,3 +77,5 @@ def get_segmentation_3d_config():
         # ClassificationParams.save_img_slices: range(70,90,2)
     }
     return append_model_params(cur_config)
+
+

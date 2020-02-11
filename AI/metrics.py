@@ -3,7 +3,7 @@ import numpy as np
 import tensorflow as tf
 from scipy.spatial.distance import *
 from preproc.contour_smoothing import getContourFromMask
-from keras import backend as K
+from tensorflow.keras import backend as K
 K.set_image_data_format('channels_last')
 
 def real_dice_coef(y_true, y_pred):

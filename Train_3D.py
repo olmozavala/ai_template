@@ -10,7 +10,7 @@ import AI.trainingutils as utilsNN
 import AI.models.modelBuilder3D as model_builder
 from AI.models.modelSelector import select_3d_model
 
-from keras.utils import plot_model
+from tensorflow.keras.utils import plot_model
 
 if __name__ == '__main__':
 

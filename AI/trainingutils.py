@@ -1,5 +1,7 @@
-import keras.callbacks as callbacks
-from keras.utils import plot_model
+import tensorflow.keras.callbacks as callbacks
+from tensorflow.keras.utils import plot_model
+from tensorflow.keras.optimizers import *
+from preproc.constants import NormParams
 
 from AI.metrics import dice_coef_loss, real_dice_coef
 from os.path import join
@@ -36,12 +38,13 @@ def get_all_callbacks(model_name, early_stopping_func, weights_folder, logs_fold
     )
 
     # Saving the model every epoch
-    filepath_model = join(weights_folder, model_name+'-{epoch:02d}-{val_loss:.2f}.hdf5')
-    save_callback = callbacks.ModelCheckpoint(filepath_model, monitor=early_stopping_func, save_best_only=True,
-                                              mode='max',save_weights_only=True)
+    filepath_model = join(weights_folder, model_name+'-{epoch:02d}-{val_loss:.5f}.hdf5')
+    save_callback = callbacks.ModelCheckpoint(filepath_model, monitor=early_stopping_func,
+                                              save_best_only=True,
+                                              save_weights_only=True)
 
     # Early stopping
-    stop_callback = callbacks.EarlyStopping(monitor=early_stopping_func, min_delta=.001, patience=70, mode='max')
+    stop_callback = callbacks.EarlyStopping(monitor=early_stopping_func, min_delta=.0001, patience=200, mode='min')
     return [logger, save_callback, stop_callback]
 
 
@@ -101,7 +104,6 @@ def runAndSaveModel(model, X, Y, model_name, epochs, is3d, val_per, early_stoppi
 #                         batch_size=1,
 #                         callbacks=[logger, save_callback, stop_callback]
 #     )
-
 def split_train_and_test(num_examples, test_percentage):
     """
     Splits a number into training and test randomly
@@ -140,6 +142,7 @@ def split_train_validation_and_test(num_examples, val_percentage, test_percentag
     test_idx.sort()
 
     return [train_idx, val_idx, test_idx]
+
 
 def trainMultipleModels(dataContainer, imgs_dims, model_name, architectures=['2D','simple', '2DU', '2DSec']):
 
@@ -190,8 +193,8 @@ def trainMultipleModels(dataContainer, imgs_dims, model_name, architectures=['2D
                                 if curr_arc == '2DU':
                                     model = trainModel2DUNet(imgs_dims)
 
-                                f_mod_name = "{}_Opt_{}_lr_{:2.3f}_mom_{:2.3f}_decay_{:2.4f}_{}_{}".format(\
-                                                curr_arc, optim, lr, mom, dc, loss_str, model_name)
+                                f_mod_name = "{}_Opt_{}_lr_{:2.3f}_mom_{:2.3f}_decay_{:2.4f}_{}_{}".format( \
+                                    curr_arc, optim, lr, mom, dc, loss_str, model_name)
                                 print("\n Compiling ******** {} ******".format(f_mod_name))
                                 model.compile(loss=loss, optimizer=optim, metrics=metrics)
 
@@ -200,10 +203,35 @@ def trainMultipleModels(dataContainer, imgs_dims, model_name, architectures=['2D
 
     return model
 
+
 def save_splits(file_name, folders_to_read, train_idx, val_idx, test_idx):
+    info_splits = DataFrame({F'Train({len(train_ids)})':train_ids,
+                   F'Validation({len(val_ids)}':val_ids,
+                   F'Test({len(test_ids)}':test_ids,
+                   })
+
+    info_splits.to_csv(file_name_splits, index=None)
     print("Saving splits....")
     file = open(file_name,'w')
-    file.write("\n\nTrain examples (total:{}) :{}".format(len(train_idx), folders_to_read[train_idx]))
-    file.write("\n\nValidation examples (total:{}) :{}:".format(len(val_idx), folders_to_read[val_idx]))
-    file.write("\n\nTest examples (total:{}) :{}".format(len(test_idx), folders_to_read[test_idx]))
+    file.write(F"\n\nTrain examples (total:{len(train_idx)}) :{folders_to_read[train_idx]}")
+    file.write(F"\n\nValidation examples (total:{len(val_idx)}) :{folders_to_read[val_idx]}:")
+    file.write(F"\n\nTest examples (total:{len(test_idx)}) :{folders_to_read[test_idx]}")
     file.close()
+
+
+def save_norm_params(file_name, norm_type, scaler):
+    print("Saving normalization parameters....")
+
+    if norm_type == NormParams.min_max:
+        file = open(file_name, 'w')
+        min_val = scaler.data_min_
+        max_val = scaler.data_max_
+        scale = scaler.scale_
+        range = scaler.data_range_
+
+        file.write(F"Normalization type: {norm_type}, min: {min_val}, max: {max_val}, range: {range}, scale: {scale}")
+        file.close()
+    else:
+        print(F"WARNING! The normalization type {norm_type} is unknown!")
+
+
