@@ -1,16 +1,20 @@
 from datetime import datetime
 
 from config.MainConfig import get_training_3d
-from AI.data_generation.Generators3D import *
+from AI_proj.data_generation.Generators3D import *
 
 from inout.io_common import create_folder, select_cases_from_folder
 
 from constants.AI_params import *
-import AI.trainingutils as utilsNN
-import AI.models.modelBuilder3D as model_builder
-from AI.models.modelSelector import select_3d_model
+import AI_proj.trainingutils as utilsNN
+import AI_proj.models.modelBuilder3D as model_builder
+from AI_proj.models.modelSelector import select_3d_model
 
 from tensorflow.keras.utils import plot_model
+import tensorflow as tf
+
+
+tf.config.optimizer.set_experimental_options({"auto_mixed_precision": True})
 
 if __name__ == '__main__':
 

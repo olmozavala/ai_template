@@ -12,9 +12,9 @@ from inout.io_common import create_folder
 from preproc.UtilsItk import copyItkImage
 from preproc.UtilsPreproc import binaryThresholdImage, getLargestConnectedComponents
 from inout.readDataPreproc import read_preproc_imgs_and_ctrs_itk
-from AI.data_generation.utilsDataFormat import *
-from AI.models.modelSelector import select_1d_model
-from AI.metrics import numpy_dice
+from AI_proj.data_generation.utilsDataFormat import *
+from AI_proj.models.modelSelector import select_1d_model
+from AI_proj.metrics import numpy_dice
 
 from sklearn.metrics import *
 

@@ -3,7 +3,7 @@ from tensorflow.keras.metrics import *
 from os.path import join
 import os
 
-from AI.metrics import *
+from AI_proj.metrics import *
 from constants.AI_params import *
 from img_viz.constants import *
 

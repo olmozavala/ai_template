@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from config.MainConfig import get_training_1d
-from AI.data_generation.Generators3D import *
+from AI_proj.data_generation.Generators3D import *
 
 from inout.io_common import create_folder
 from inout.io_time_series import get_all_data
@@ -12,9 +12,9 @@ from pandas import DataFrame
 from sklearn import preprocessing
 
 from constants.AI_params import *
-import AI.trainingutils as utilsNN
-import AI.models.modelBuilder3D as model_builder
-from AI.models.modelSelector import select_1d_model
+import AI_proj.trainingutils as utilsNN
+import AI_proj.models.modelBuilder3D as model_builder
+from AI_proj.models.modelSelector import select_1d_model
 
 import tensorflow as tf
 from tensorflow.keras.utils import plot_model
@@ -74,9 +74,9 @@ if __name__ == '__main__':
                                                                              val_percentage=val_perc,
                                                                              test_percentage=test_perc)
 
-    print("Train examples (total:{}) :{}".format(len(train_ids), rows_to_read[train_ids]))
-    print("Validation examples (total:{}) :{}:".format(len(val_ids), rows_to_read[val_ids]))
-    print("Test examples (total:{}) :{}".format(len(test_ids), rows_to_read[test_ids]))
+    print(F"Train examples (total:{len(train_ids)}) :{rows_to_read[train_ids]}")
+    print(F"Validation examples (total:{len(val_ids)}) :{rows_to_read[val_ids]}:")
+    print(F"Test examples (total:{len(test_ids)}) :{rows_to_read[test_ids]}")
 
     print("Selecting and generating the model....")
     now = datetime.utcnow().strftime("%Y_%m_%d_%H_%M")

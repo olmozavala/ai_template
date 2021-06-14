@@ -12,9 +12,9 @@ from inout.io_common import select_cases_from_folder, create_folder
 from preproc.UtilsItk import copyItkImage
 from preproc.UtilsPreproc import binaryThresholdImage, getLargestConnectedComponents
 from inout.readDataPreproc import read_preproc_imgs_and_ctrs_itk, recover_original_resolution
-from AI.data_generation.utilsDataFormat import *
-from AI.models.modelSelector import select_3d_model
-from AI.metrics import numpy_dice
+from AI_proj.data_generation.utilsDataFormat import *
+from AI_proj.models.modelSelector import select_3d_model
+from AI_proj.metrics import numpy_dice
 
 ORIGINAL_TXT = 'Original'
 def main():

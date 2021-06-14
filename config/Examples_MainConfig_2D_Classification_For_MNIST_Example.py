@@ -3,15 +3,11 @@ from tensorflow.keras.metrics import *
 from os.path import join
 import os
 
-from AI.metrics import *
 from constants.AI_params import *
-from img_viz.constants import *
 
 # ----------------------------- UM -----------------------------------
-_data_folder = '/media/osz1/DATA/DATA/PX/'  # Where the data is stored and where the preproc folder will be saved
-_preproc_folder = 'Preproc'  # Name to save preprocessed data
-_run_name = F'Prostate_MultiStream_{_preproc_folder}'  # Name of the model, for training and classification
-_output_folder = '/media/osz1/DATA/DATA/DELETE/NEW'  # Where to save the models
+_run_name = F'mnist_classification_example'  # Name of the model, for training and classification
+_output_folder = '/home/olmozavala/Dropbox/MyProjects/OZ_LIB/AI_Template/OUTPUT'  # Where to save the models
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"  # Decide which GPU to use to execute the code
 
